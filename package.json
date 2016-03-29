@@ -1,0 +1,19 @@
+{
+  "name": "githubwebhooksmirror",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "nodegit": "^0.11.9",
+    "async": "~0.2.8",
+    "body-parser": "^1.15.0",
+    "morgan": "^1.7.0",
+    "socket.io": "~0.9.14"
+  }
+}
