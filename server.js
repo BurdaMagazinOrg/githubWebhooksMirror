@@ -12,8 +12,10 @@ var fs = require('fs')
 
 try {
   var settings = require('./settings.json')
-  if(!settings.localPath || !settings.githubUrl || !settings.drupalUrl) {
-    throw new Error()
+  for(var setting in settings) {
+    if(!settings[setting].localPath || !settings[setting].githubUrl || !settings[setting].drupalUrl) {
+      throw new Error()
+    }
   }
 } catch (e) {
   console.log('You have to provide a valid settings.json')
@@ -28,47 +30,78 @@ app.use(morgan('dev'))
 
 //router.use(express.static(path.resolve(__dirname, 'client')))
 
-app.post('/', jsonencode, function(req, res) {
-  //console.log(req.body)
-  Git.Repository.open(settings.localPath).then(function(successfulResult) {
-      successfulResult.fetchAll({}, function() {
-        pushToDrupal(successfulResult)
-      })
-    },
-    function(reasonForFailure) {
-      console.log(reasonForFailure)
-      if(/Failed to resolve path/.test(reasonForFailure) || /Could not find repository/.test(reasonForFailure)) {
-        cloneRepo()
-      }
-    })
+app.post('/:name', jsonencode, function(req, res) {
+  if(!(req.params.name in settings)) {
+    return res.sendStatus(404)
+  }
 
-  res.sendStatus(200)
+  var setting = settings[req.params.name]
+
+  openRepo(setting).then(function() {
+    return pushToDrupal(setting)
+  }).then(function() {
+    res.sendStatus(200)
+  }).catch(function(error) {
+    console.log(error)
+    res.status(500).send(error)
+  })
+
 })
 
-function cloneRepo() {
-  console.log('cloning repository...')
-  var cmd = util.format('git clone --mirror %s %s', settings.githubUrl, settings.localPath)
-  exec(cmd, function (error, stdout, stderr) {
-    if(error) {
-      throw error
-    }
-    console.log(stdout)
-    console.log(stderr)
-    console.log('cloning finished')
-    pushToDrupal()
+function openRepo(setting) {
+  return new Promise(function(resolve, reject) {
+    Git.Repository.open(setting.localPath).then(function(successfulResult) {
+        console.log('fetching updates...')
+        successfulResult.fetchAll({}, function() {
+          console.log('fetching finished')
+          resolve()
+        })
+      },
+      function(reasonForFailure) {
+        console.error(reasonForFailure)
+        if(/Failed to resolve path/.test(reasonForFailure) || /Could not find repository/.test(reasonForFailure)) {
+          cloneRepo(setting, function(err) {
+            if(err) return reject(err)
+            resolve()
+          })
+        }
+        else {
+          reject(reasonForFailure)
+        }
+      })
   })
 }
 
-function pushToDrupal() {
-  console.log('starting push...')
-  var cmd = util.format('git -C %s push --mirror %s', settings.localPath, settings.drupalUrl)
+function cloneRepo(setting, cb) {
+  console.log('cloning repository...')
+  var cmd = util.format('git clone --mirror %s %s', setting.githubUrl, setting.localPath)
+  executeCmd(cmd, function(err) {
+    if (err) return cb(err)
+    console.log('cloning finished')
+    cb()
+  })
+}
+
+function pushToDrupal(setting) {
+  return new Promise(function(resolve, reject) {
+    console.log('starting push...')
+    var cmd = util.format('git -C %s push --mirror %s', setting.localPath, setting.drupalUrl)
+    executeCmd(cmd, function(err) {
+      if (err) return reject(err)
+      console.log('push finished')
+      resolve()
+    })
+  })
+}
+
+function executeCmd(cmd, cb) {
   exec(cmd, function(error, stdout, stderr) {
     if(error) {
-      console.error(error)
+      return cb(error)
     }
     console.log(stdout)
     console.error(stderr)
-    console.log('push finished')
+    cb()
   })
 }
 
