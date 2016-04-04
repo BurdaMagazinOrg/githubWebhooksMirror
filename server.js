@@ -12,7 +12,7 @@ var fs = require('fs')
 try {
   var settings = require('./settings.json')
   for(var setting in settings) {
-    if(!settings[setting].localPath || !settings[setting].githubUrl || !settings[setting].drupalUrl) {
+    if(!settings[setting].localPath || !settings[setting].githubUrl || !settings[setting].drupalUrl || !settings[setting].branch) {
       throw new Error()
     }
   }
@@ -50,7 +50,10 @@ app.post('/:name', jsonencode, function(req, res) {
 function openRepo(setting) {
   return new Promise(function(resolve, reject) {
     Git.Repository.open(setting.localPath).then(function(successfulResult) {
-        console.log('fetching updates...')
+        fetchUpdates(setting, function(err) {
+          if (err) return reject(err)
+          resolve()
+        })
         successfulResult.fetchAll({}, function() {
           console.log('fetching finished')
           resolve()
@@ -81,10 +84,20 @@ function cloneRepo(setting, cb) {
   })
 }
 
+function fetchUpdates(setting, cb) {
+  console.log('fetching updates...')
+  var cmd = util.format('git -C %s fetch', setting.localPath)
+  executeCmd(cmd, function(err) {
+    if (err) return rb(err)
+    console.log('fetching finished')
+    cb();
+  })
+}
+
 function pushToDrupal(setting) {
   return new Promise(function(resolve, reject) {
     console.log('starting push...')
-    var cmd = util.format('git -C %s push --mirror %s', setting.localPath, setting.drupalUrl)
+    var cmd = util.format('git -C %s push --tags %s %s', setting.localPath, setting.drupalUrl, setting.branch)
     executeCmd(cmd, function(err) {
       if (err) return reject(err)
       console.log('push finished')
