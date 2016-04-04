@@ -1,7 +1,6 @@
 /**
  * Created by timowelde on 29.03.16.
  */
-var async = require('async')
 var express = require('express')
 var morgan = require('morgan')
 var bodyParser = require("body-parser")
