@@ -54,10 +54,6 @@ function openRepo(setting) {
           if (err) return reject(err)
           resolve()
         })
-        successfulResult.fetchAll({}, function() {
-          console.log('fetching finished')
-          resolve()
-        })
       },
       function(reasonForFailure) {
         console.error(reasonForFailure)
