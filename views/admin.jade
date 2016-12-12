@@ -1,0 +1,40 @@
+extends layout
+
+block content
+    h1 Admin
+
+    h3 Add repository
+    form(method='post')
+        .form-group
+            select.form-control(name="repo")
+                each val in githubRepos.length ? githubRepos : ["There are no repos"]
+                    option=val.full_name
+        .form-group
+            input.form-control(type="text", name="mirror", placeholder="Mirror URL")
+         .form-group
+             input.form-control(type="text", name="branch", placeholder="Branch")
+
+        button.btn.btn-primary(type="submit") Add
+
+
+    h3 Existing repositories
+    .repositories.row
+        each val,key in repos
+            .col-md-6
+                .panel.panel-default
+                    .panel-heading
+                        =key
+                        a(href='/admin/remove/' + key).glyphicon.glyphicon-remove.pull-right.text-muted
+                    .panel-body
+                        .row
+                            .col-md-2 #[strong GitHub:]
+                            .col-md-10
+                                =val.github
+                        .row
+                            .col-md-2 #[strong Mirror:]
+                            .col-md-10
+                                =val.mirror
+                        .row
+                            .col-md-2 #[strong Branch:]
+                            .col-md-10
+                                =val.branch

@@ -8,15 +8,20 @@ var fs = require('fs')
 
 var settings = require('../settings.json')
 
-router.post('/:name', function(req, res) {
-  if(!(req.params.name in settings)) {
+var Repositories = require('../config/db').get('repositories')
+
+router.post('/:name/:repo', function(req, res) {
+  var setting = req.params.name + '/' + req.params.repo
+  var repo = Repositories.find(function(value, key) {
+    if (key === setting) return true
+  }).value()
+
+  if(!repo) {
     return res.sendStatus(404)
   }
 
-  var setting = settings[req.params.name]
-
-  openRepo(setting).then(function() {
-    return pushToDrupal(setting)
+  openRepo(repo).then(function() {
+    return pushToDrupal(repo)
   }).then(function() {
     res.sendStatus(200)
   }).catch(function(error) {
@@ -26,10 +31,10 @@ router.post('/:name', function(req, res) {
 
 })
 
-function openRepo(setting) {
+function openRepo(repo) {
   return new Promise(function(resolve, reject) {
-    Git.Repository.open(setting.localPath).then(function(successfulResult) {
-        fetchUpdates(setting, function(err) {
+    Git.Repository.open(repo.path).then(function(successfulResult) {
+        fetchUpdates(repo, function(err) {
           if (err) return reject(err)
           resolve()
         })
@@ -37,7 +42,7 @@ function openRepo(setting) {
       function(reasonForFailure) {
         console.error(reasonForFailure)
         if(/Failed to resolve path/.test(reasonForFailure) || /Could not find repository/.test(reasonForFailure)) {
-          cloneRepo(setting, function(err) {
+          cloneRepo(repo, function(err) {
             if(err) return reject(err)
             resolve()
           })
@@ -49,9 +54,9 @@ function openRepo(setting) {
   })
 }
 
-function cloneRepo(setting, cb) {
+function cloneRepo(repo, cb) {
   console.log('cloning repository...')
-  var cmd = util.format('git clone --mirror %s %s', setting.githubUrl, setting.localPath)
+  var cmd = util.format('git clone --mirror %s %s', repo.github, repo.path)
   executeCmd(cmd, function(err) {
     if (err) return cb(err)
     console.log('cloning finished')
@@ -59,9 +64,9 @@ function cloneRepo(setting, cb) {
   })
 }
 
-function fetchUpdates(setting, cb) {
+function fetchUpdates(repo, cb) {
   console.log('fetching updates...')
-  var cmd = util.format('git -C %s fetch', setting.localPath)
+  var cmd = util.format('git -C %s fetch', repo.path)
   executeCmd(cmd, function(err) {
     if (err) return rb(err)
     console.log('fetching finished')
@@ -69,10 +74,10 @@ function fetchUpdates(setting, cb) {
   })
 }
 
-function pushToDrupal(setting) {
+function pushToDrupal(repo) {
   return new Promise(function(resolve, reject) {
     console.log('starting push...')
-    var cmd = util.format('git -C %s push --tags %s %s', setting.localPath, setting.drupalUrl, setting.branch)
+    var cmd = util.format('git -C %s push --tags %s %s', repo.path, repo.mirror, repo.branch)
     executeCmd(cmd, function(err) {
       if (err) return reject(err)
       console.log('push finished')

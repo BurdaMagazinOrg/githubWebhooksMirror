@@ -10,8 +10,20 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
     "express": "^4.13.4",
+    "express-session": "^1.14.2",
+    "github": "^7.0.1",
+    "jade": "^1.11.0",
+    "lowdb": "^0.14.0",
+    "morgan": "^1.7.0",
     "nodegit": "^0.14.0",
-    "morgan": "^1.7.0"
+    "octonode": "^0.7.7",
+    "passport": "^0.3.2",
+    "passport-github": "^1.1.0"
+  },
+  "devDependencies": {
+    "cookie-session": "^2.0.0-alpha.2"
   }
 }
