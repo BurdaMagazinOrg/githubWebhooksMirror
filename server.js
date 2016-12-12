@@ -25,8 +25,8 @@ app.use(morgan('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
-// app.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
-app.use(cookieSession({name: 'session', keys: ['key1', 'key2']})) //TODO: dev only
+app.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
+// app.use(cookieSession({name: 'session', keys: ['key1', 'key2']})) //TODO: dev only
 app.use(flash());
 app.use(passport.initialize())
 app.use(passport.session())
