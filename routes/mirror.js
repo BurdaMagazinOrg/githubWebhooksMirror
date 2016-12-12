@@ -75,7 +75,7 @@ function fetchUpdates(repo, cb) {
 function pushToDrupal(repo) {
   return new Promise(function(resolve, reject) {
     console.log('starting push...')
-    var cmd = util.format('git -C %s push --tags %s %s', repo.path, repo.mirror, repo.branch)
+    var cmd = util.format('git -C %s push --tags -f %s %s', repo.path, repo.mirror, repo.branch)
     executeCmd(cmd, function(err) {
       if (err) return reject(err)
       console.log('push finished')
