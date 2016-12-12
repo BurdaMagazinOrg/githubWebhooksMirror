@@ -76,7 +76,7 @@ router.post('/', isAuthenticated, function(req, res) {
     }).then(function(data) {
       Repositories.assign({[req.body.repo]: {
         webhookID: data.id,
-        github: 'git@github.com/' + req.body.repo + '.git',
+        github: 'ssh://git@github.com/' + req.body.repo + '.git',
         mirror: req.body.mirror,
         branch: req.body.branch,
         path: './repositories/' + req.body.repo
