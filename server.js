@@ -13,6 +13,12 @@ var passport = require('./config/passport')
 
 var routes = require('./routes')
 
+var settings = require('./settings.json')
+if(!settings['clientID'] || !settings['clientSecret']) {
+  console.log('You have to provide a valid settings.json')
+  process.exit(1)
+}
+
 var app = express()
 
 // view engine setup
