@@ -13,18 +13,6 @@ var passport = require('./config/passport')
 
 var routes = require('./routes')
 
-try {
-  var settings = require('./settings.json')
-  for(var setting in settings) {
-    if(!settings[setting].localPath || !settings[setting].githubUrl || !settings[setting].drupalUrl || !settings[setting].branch) {
-      throw new Error()
-    }
-  }
-} catch (e) {
-  console.log('You have to provide a valid settings.json')
-  process.exit(1)
-}
-
 var app = express()
 
 // view engine setup
