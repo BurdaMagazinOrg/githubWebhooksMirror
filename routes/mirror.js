@@ -6,8 +6,6 @@ var exec = require('child_process').exec
 var util = require('util')
 var fs = require('fs')
 
-var settings = require('../settings.json')
-
 var Repositories = require('../config/db').get('repositories')
 
 router.post('/:name/:repo', function(req, res) {
