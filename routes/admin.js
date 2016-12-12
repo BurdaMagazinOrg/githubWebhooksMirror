@@ -51,7 +51,7 @@ router.get('/', isAuthenticated, function(req, res) {
 })
 
 router.post('/', isAuthenticated, function(req, res) {
-  if(req.body.repo && req.body.mirror && req.body.branch){
+  if(req.body.repo && req.body.mirror && req.body.branch) {
     var url = 'http://' + req.get('host') + '/mirror/' + req.body.repo
     var github = new GitHubApi(githubSettings)
     github.authenticate({
@@ -79,7 +79,7 @@ router.post('/', isAuthenticated, function(req, res) {
         github: 'https://github.com/' + req.body.repo + '.git',
         mirror: req.body.mirror,
         branch: req.body.branch,
-        path: './repositories' + req.body.repo
+        path: './repositories/' + req.body.repo
       }}).value()
       res.redirect('/admin')
     }).catch(function (err) {
