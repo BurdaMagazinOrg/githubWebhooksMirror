@@ -1,8 +1,16 @@
 var passport = require('passport')
 var GitHubStrategy = require('passport-github').Strategy
+var BasicStrategy = require('passport-http').BasicStrategy
 
 var db = require('./db')
 const Users = db.get('users')
+
+passport.use(new BasicStrategy(function (userid, password, done) {
+  var user = Users.find({type: "basic", id: userid}).value()
+  if (!user) { return done(null, false) }
+  if (user.password !== password) { return done(null, false) }
+  return done(null, true)
+}))
 
 passport.use(new GitHubStrategy({
   clientID: 'ae51c7518c5c12b5fb42',
