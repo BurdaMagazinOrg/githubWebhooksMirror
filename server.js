@@ -21,11 +21,13 @@ if(!settings['clientID'] || !settings['clientSecret']) {
 
 var app = express()
 
+app.locals.pathprefix = settings.pathPrefix
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(express.static(path.resolve(__dirname, 'public')))
+app.use(settings.pathPrefix, express.static(path.resolve(__dirname, 'public')))
 
 app.use(morgan('dev'))
 app.use(bodyParser.json())
@@ -37,7 +39,7 @@ app.use(flash());
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use('/', routes)
+app.use(settings.pathPrefix, routes)
 
 var listener = app.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
   var addr = listener.address()

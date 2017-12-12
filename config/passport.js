@@ -17,7 +17,7 @@ passport.use(new BasicStrategy(function (userid, password, done) {
 passport.use(new GitHubStrategy({
   clientID: settings.clientID,
   clientSecret: settings.clientSecret,
-  callbackURL: "/admin/auth/callback",
+  callbackURL: settings.pathPrefix + "/admin/auth/callback",
   scope: ['repo', 'write:repo_hook']
 }, function(accessToken, refreshToken, profile, cb) {
   var user = Users.find({ id: profile.id})

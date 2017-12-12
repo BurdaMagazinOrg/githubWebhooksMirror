@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
 var passport = require('passport')
+var settings = require('../settings.json')
 
 var GitHubApi = require('github')
 var githubSettings = {}
@@ -16,15 +17,15 @@ router.get('/login', function(req, res) {
 
 router.get('/logout', function(req, res) {
   req.logout()
-  res.redirect('/admin/login')
+  res.redirect(settings.pathPrefix + '/admin/login')
 })
 
 router.get('/auth/github', passport.authenticate('github'))
 
 router.get('/auth/callback',
-  passport.authenticate('github', { failureRedirect: '/admin/login', failureFlash: true }),
+  passport.authenticate('github', { failureRedirect: settings.pathPrefix + '/admin/login', failureFlash: true }),
   function(req, res) {
-    res.redirect("/admin")
+    res.redirect(settings.pathPrefix + '/admin')
   }
 )
 
@@ -52,7 +53,7 @@ router.get('/', isAuthenticated, function(req, res) {
 
 router.post('/', isAuthenticated, function(req, res) {
   if(req.body.repo && req.body.mirror && req.body.branch) {
-    var url = 'http://' + req.get('host') + '/mirror/' + req.body.repo
+    var url = 'http://' + req.get('host') + settings.pathPrefix + '/mirror/' + req.body.repo
     var github = new GitHubApi(githubSettings)
     github.authenticate({
       type: "token",
@@ -81,7 +82,7 @@ router.post('/', isAuthenticated, function(req, res) {
         branch: req.body.branch,
         path: './repositories/' + req.body.repo
       }}).value()
-      res.redirect('/admin')
+      res.redirect(settings.pathPrefix + '/admin')
     }).catch(function (err) {
       res.status(500).send(err)
     })
@@ -106,7 +107,7 @@ router.get('/remove/:owner/:repo', isAuthenticated, function (req, res) {
   }).then(function(data) {
     var success = Repositories.unset(setting).value()
     if(success) {
-      res.redirect("/admin")
+      res.redirect(settings.pathPrefix + '/admin')
     }
     else {
       res.sendStatus(500)
@@ -122,5 +123,5 @@ module.exports = router
 
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) return next()
-  res.redirect('/admin/login')
+  res.redirect(settings.pathPrefix + '/admin/login')
 }

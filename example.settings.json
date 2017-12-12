@@ -1,4 +1,5 @@
 {
-  "clientID": "<insert github clientID>",
-  "clientSecret": "insert github clientSecret"
+  "clientID": "<github clientID>",
+  "clientSecret": "<github clientSecret>",
+  "pathPrefix": "/githubmirror"
 }

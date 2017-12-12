@@ -2,12 +2,13 @@ var express = require('express')
 var router = express.Router()
 var passport = require('passport')
 var Users = require('../config/db').get('users')
+var settings = require('../settings.json')
 
 var mirror = require('./mirror')
 var admin = require('./admin')
 
 router.get('/', function(req, res) {
-  res.redirect('/admin')
+  res.redirect(settings.pathPrefix + '/admin')
 })
 
 router.use('/mirror', mirror)
@@ -24,7 +25,7 @@ router.post('/newuser', hasNoBasicUser, function(req, res) {
       password: req.body.password
     }).value()
     if(user){
-      return res.redirect('/admin')
+      return res.redirect(settings.pathPrefix + '/admin')
     }
     else {
       return res.sendStatus(400)
@@ -42,7 +43,7 @@ function hasBasicUser(req, res, next) {
     return next()
   }
   else {
-    res.redirect('/newuser')
+    res.redirect(settings.pathPrefix + '/newuser')
   }
 }
 function basicAuthentication(req, res, next) {
