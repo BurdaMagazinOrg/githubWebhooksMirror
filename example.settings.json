@@ -1,4 +1,6 @@
 {
-  "clientID": "<insert github clientID>",
-  "clientSecret": "insert github clientSecret"
+  "clientID": "<github clientID>",
+  "clientSecret": "<github clientSecret>",
+  "ssl_cert": "<path to cert.pem>",
+  "ssl_key": "<path to key.pem>"
 }
