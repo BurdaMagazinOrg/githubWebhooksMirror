@@ -7,7 +7,7 @@ var mirror = require('./mirror')
 var admin = require('./admin')
 
 router.get('/', function(req, res) {
-  res.send('Github Mirror Test')
+  res.redirect('/admin')
 })
 
 router.use('/mirror', mirror)

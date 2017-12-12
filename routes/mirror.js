@@ -95,8 +95,4 @@ function executeCmd(cmd, cb) {
   })
 }
 
-router.get('/', function(req, res) {
-  res.send('Github Mirror Test')
-})
-
 module.exports = router
