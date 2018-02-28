@@ -7,14 +7,17 @@ block content
     form(method='post')
         .form-group
             select.form-control(name="repo")
-                each val in githubRepos.length ? githubRepos : ["There are no repos"]
-                    option=val.full_name
+                each page in githubRepos.length ? githubRepos : [[{full_name: "There are no repos"}]]
+                    each val in page
+                        option=val.full_name
         .form-group
             input.form-control(type="text", name="mirror", placeholder="Mirror URL")
          .form-group
              input.form-control(type="text", name="branch", placeholder="Branch")
 
         button.btn.btn-primary(type="submit") Add
+    h4 Existing webhooks of repository
+        .webhooks-target
 
 
     h3 Existing repositories

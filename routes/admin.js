@@ -36,9 +36,8 @@ router.get('/', isAuthenticated, function(req, res) {
     token: req.user.accesstoken
   })
 
-  Promise.all([
-    github.repos.getAll({per_page: 100})
-  ]).then(function(data) {
+  getAllRepos(github)
+  .then(function(data) {
 
     var repos = Repositories.value()
 
@@ -46,10 +45,27 @@ router.get('/', isAuthenticated, function(req, res) {
       title: "Mirror Admin",
       values: data,
       repos: repos,
-      githubRepos: data[0],
+      githubRepos: data,
     })
   })
 })
+
+async function getAllRepos(github) {
+  let finished = false
+  let page = 1
+
+  let data = []
+
+  while(!finished) {
+    data[page-1] = await github.repos.getAll({per_page: 100, page})
+    if (!github.hasNextPage(data[page-1]['meta']['link'])) {
+      finished = true
+    }
+    page++
+  }
+
+  return data
+}
 
 router.post('/', isAuthenticated, function(req, res) {
   if(req.body.repo && req.body.mirror && req.body.branch) {
