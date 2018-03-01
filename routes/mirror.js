@@ -39,7 +39,8 @@ function openRepo(repo) {
       },
       function(reasonForFailure) {
         console.error(reasonForFailure)
-        if(/Failed to resolve path/.test(reasonForFailure) || /Could not find repository/.test(reasonForFailure)) {
+        // failed to resolve path || could not find repository
+        if(reasonForFailure.errno === -3) {
           cloneRepo(repo, function(err) {
             if(err) return reject(err)
             resolve()
