@@ -3,7 +3,7 @@ var router = express.Router()
 var passport = require('passport')
 var settings = require('../settings.json')
 
-var GitHubApi = require('github')
+var GitHubApi = require('@octokit/rest')
 var githubSettings = {}
 
 var db = require('../config/db')
