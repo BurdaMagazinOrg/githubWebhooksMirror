@@ -40,7 +40,6 @@ router.get('/', isAuthenticated, function(req, res) {
   .then(function(data) {
 
     var repos = Repositories.value()
-
     res.render('admin', {
       title: "Mirror Admin",
       values: data,
@@ -57,8 +56,8 @@ async function getAllRepos(github) {
   let data = []
 
   while(!finished) {
-    data[page-1] = await github.repos.getAll({per_page: 100, page})
-    if (!github.hasNextPage(data[page-1]['meta']['link'])) {
+    data[page-1] = await github.repos.getAll({per_page: 100, page: page})
+    if (data[page-1]['headers']['link'] && !github.hasNextPage(data[page-1]['headers'])) {
       finished = true
     }
     page++

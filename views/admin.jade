@@ -8,7 +8,7 @@ block content
         .form-group
             select.form-control(name="repo")
                 each page in githubRepos.length ? githubRepos : [[{full_name: "There are no repos"}]]
-                    each val in page
+                    each val in page.data
                         option=val.full_name
         .form-group
             input.form-control(type="text", name="mirror", placeholder="Mirror URL")
