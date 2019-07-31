@@ -91,7 +91,7 @@ router.post('/', isAuthenticated, function(req, res) {
       active: true
     }).then(function(data) {
       Repositories.assign({[req.body.repo]: {
-        webhookID: data.id,
+        hook_id: data.data.id,
         github: 'ssh://git@github.com/' + req.body.repo + '.git',
         mirror: req.body.mirror,
         branch: req.body.branch,
@@ -118,7 +118,7 @@ router.get('/remove/:owner/:repo', isAuthenticated, function (req, res) {
   github.repos.deleteHook({
     owner: req.params.owner,
     repo: req.params.repo,
-    id: repo.webhookID
+    hook_id: repo.hook_id
   }).then(function(data) {
     var success = Repositories.unset(setting).value()
     if(success) {
